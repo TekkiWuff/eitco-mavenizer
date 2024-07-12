@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import de.eitco.mavenizer.MavenUid.MavenUidComponent;
 import de.eitco.mavenizer.StringUtil;
 import de.eitco.mavenizer.analyze.JarAnalyzer.JarAnalyzerType;
@@ -24,8 +26,9 @@ public class ClassTimestampAnalyzer {
 		var total = 0;
 		
 		for (var entry : classes) {
-			if (entry.timestamp != null) {
-				var instant = entry.timestamp.toInstant();
+			var lastChange = ObjectUtils.max(entry.timestampCreatedAt, entry.timestampLastModifiedAt);
+			if (lastChange != null) {
+				var instant = lastChange.toInstant();
 				var dateUtc = LocalDate.ofInstant(instant, ZoneOffset.UTC);
 				var count = datesToOccurence.getOrDefault(dateUtc, 0);
 				datesToOccurence.put(dateUtc, count + 1);
